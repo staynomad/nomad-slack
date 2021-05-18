@@ -1,0 +1,22 @@
+{
+  "name": "nomad-slack",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/staynomad/nomad-slack.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/staynomad/nomad-slack/issues"
+  },
+  "homepage": "https://github.com/staynomad/nomad-slack#readme",
+  "dependencies": {
+    "@slack/bolt": "^3.3.0"
+  }
+}
