@@ -9,7 +9,9 @@ const bot = new SlackBot({
   name: "nomadbot",
 });
 
-bot.on("start", () => {});
+bot.on("start", () => {
+  console.log("nomadbot is running!")
+});
 
 bot.on("error", (err) => {
   console.log(err);
@@ -23,7 +25,7 @@ bot.on("message", (data) => {
 });
 
 const handleMessage = (data) => {
-  if (data.text.includes(" ping")) {
+  if (data.text.includes("!ping")) {
     handlePing(data.channel);
   }
 };
