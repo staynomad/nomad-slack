@@ -1,50 +1,46 @@
-const { App } = require('@slack/bolt');
+const SlackBot = require("slackbots");
 const axios = require("axios");
 const dotenv = require("dotenv");
 
 dotenv.config();
 
-const app = new App({
+const bot = new SlackBot({
   token: process.env.SLACK_TOKEN,
-  signingSecret: process.env.SLACK_SIGNING_SECRET,
+  name: "nomadbot",
 });
 
-app.message('!ping', async ({ message, say }) => {
-  var msg;
+bot.on("start", () => {
+  console.log("nomadbot is running!");
+});
+
+bot.on("error", (err) => {
+  console.log(err);
+});
+
+bot.on("message", (data) => {
+  if (data.type !== "message") {
+    return;
+  }
+  handleMessage(data);
+});
+
+const handleMessage = (data) => {
+  if (data.text.includes("!ping")) {
+    handlePing(data.channel);
+  }
+};
+
+const handlePing = async (channelId) => {
+  const channel = await bot.getChannelById(channelId);
   try {
     const res = await axios.get("https://api.vhomesgroup.com/ping");
     const { state, dbState } = res.data;
 
-    msg = `Server is ${state}, database is ${dbState}!`
+    bot.postMessageToChannel(
+      channel.name,
+      `Server is ${state}, database is ${dbState}!`
+    );
   } catch (err) {
-    msg = 'Server is down!'
+    bot.postMessageToChannel(channel.name, "Server is down!");
   }
-  // say() sends a message to the channel where the event was triggered
-  await say(msg);
-});
-
-app.message('hi', async ({ message, say }) => {
-  console.log("hello")
-});
-
-// const handlePing = async (channelId) => {
-//   const channel = await bot.getChannelById(channelId);
-//   try {
-//     const res = await axios.get("https://api.vhomesgroup.com/ping");
-//     const { state, dbState } = res.data;
-
-//     bot.postMessageToChannel(
-//       channel.name,
-//       `Server is ${state}, database is ${dbState}!`
-//     );
-//   } catch (err) {
-//     bot.postMessageToChannel(channel.name, "Server is down!");
-//   }
-// };
-
-(async () => {
-  // Start your app
-  await app.start(process.env.PORT || 3000);
-
-  console.log('⚡️ Bolt app is running!');
-})();
+};
