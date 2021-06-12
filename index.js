@@ -44,3 +44,10 @@ const handlePing = async (channelId) => {
     bot.postMessageToChannel(channel.name, "Server is down!");
   }
 };
+
+(async () => {
+  // Start your app
+  await bot.start(process.env.PORT || 3000);
+
+  console.log('⚡️ Bolt app is running!');
+})();
