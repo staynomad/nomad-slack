@@ -1,53 +1,50 @@
-const SlackBot = require("slackbots");
+const { App } = require('@slack/bolt');
 const axios = require("axios");
 const dotenv = require("dotenv");
 
 dotenv.config();
 
-const bot = new SlackBot({
+const app = new App({
   token: process.env.SLACK_TOKEN,
-  name: "nomadbot",
+  signingSecret: process.env.SLACK_SIGNING_SECRET,
 });
 
-bot.on("start", () => {
-  console.log("nomadbot is running!")
-});
-
-bot.on("error", (err) => {
-  console.log(err);
-});
-
-bot.on("message", (data) => {
-  if (data.type !== "message") {
-    return;
-  }
-  handleMessage(data);
-});
-
-const handleMessage = (data) => {
-  if (data.text.includes("!ping")) {
-    handlePing(data.channel);
-  }
-};
-
-const handlePing = async (channelId) => {
-  const channel = await bot.getChannelById(channelId);
+app.message('!ping', async ({ message, say }) => {
+  var msg;
   try {
     const res = await axios.get("https://api.vhomesgroup.com/ping");
     const { state, dbState } = res.data;
 
-    bot.postMessageToChannel(
-      channel.name,
-      `Server is ${state}, database is ${dbState}!`
-    );
+    msg = `Server is ${state}, database is ${dbState}!`
   } catch (err) {
-    bot.postMessageToChannel(channel.name, "Server is down!");
+    msg = 'Server is down!'
   }
-};
+  // say() sends a message to the channel where the event was triggered
+  await say(msg);
+});
+
+app.message('hi', async ({ message, say }) => {
+  console.log("hello")
+});
+
+// const handlePing = async (channelId) => {
+//   const channel = await bot.getChannelById(channelId);
+//   try {
+//     const res = await axios.get("https://api.vhomesgroup.com/ping");
+//     const { state, dbState } = res.data;
+
+//     bot.postMessageToChannel(
+//       channel.name,
+//       `Server is ${state}, database is ${dbState}!`
+//     );
+//   } catch (err) {
+//     bot.postMessageToChannel(channel.name, "Server is down!");
+//   }
+// };
 
 (async () => {
   // Start your app
-  await bot.start(process.env.PORT || 3000);
+  await app.start(process.env.PORT || 3000);
 
   console.log('⚡️ Bolt app is running!');
 })();

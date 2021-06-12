@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/staynomad/nomad-slack#readme",
   "dependencies": {
+    "@slack/bolt": "^3.4.0",
     "axios": "^0.21.1",
     "dotenv": "^9.0.2",
     "slackbots": "^1.2.0"
